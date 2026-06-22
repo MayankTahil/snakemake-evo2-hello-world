@@ -1,13 +1,13 @@
-"""Score a DNA sequence using Evo2 on NVIDIA NIM."""
+"""Score a DNA sequence using Evo2 via NVIDIA cloud API."""
 
 import argparse
 import json
 import os
-from dotenv import load_dotenv
 import sys
 from pathlib import Path
 
-from openai import OpenAI
+import requests
+from dotenv import load_dotenv
 
 
 def read_fasta(path: str) -> tuple[str, str]:
@@ -22,20 +22,22 @@ def read_fasta(path: str) -> tuple[str, str]:
     return header, "".join(sequence)
 
 
-def score_sequence(sequence: str, model: str, client: OpenAI) -> dict:
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {
-                "role": "user",
-                "content": sequence,
-            }
-        ],
-        extra_body={
-            "task": "score",
+def score_sequence(sequence: str, api_base: str, api_key: str) -> dict:
+    # Use generate with num_tokens=1 and sampled probs to get per-token log-likelihoods
+    url = f"{api_base.rstrip('/')}/biology/arc/evo2-40b/generate"
+    r = requests.post(
+        url=url,
+        headers={"Authorization": f"Bearer {api_key}"},
+        json={
+            "sequence": sequence,
+            "num_tokens": 1,
+            "top_k": 1,
+            "enable_sampled_probs": True,
         },
+        timeout=120,
     )
-    return response.model_dump()
+    r.raise_for_status()
+    return r.json()
 
 
 def main():
@@ -43,28 +45,25 @@ def main():
     parser = argparse.ArgumentParser(description="Score a DNA sequence with Evo2")
     parser.add_argument("--input", required=True, help="Input FASTA file")
     parser.add_argument("--output", required=True, help="Output JSON file")
-    parser.add_argument("--model", required=True, help="Evo2 model name")
-    parser.add_argument("--api-base", required=True, help="NVIDIA NIM API base URL")
+    parser.add_argument("--api-base", required=True, help="Evo2 API base URL")
     args = parser.parse_args()
 
-    api_key = os.environ.get("NVIDIA_API_KEY")
+    api_key = os.environ.get("NVIDIA_API_KEY", "")
     if not api_key:
-        print("ERROR: NVIDIA_API_KEY environment variable not set.", file=sys.stderr)
-        print("Get your key at: https://build.nvidia.com/arc-institute/evo-2-40b", file=sys.stderr)
+        print("ERROR: NVIDIA_API_KEY not set. Copy .env.example to .env and add your key.", file=sys.stderr)
         sys.exit(1)
-
-    client = OpenAI(base_url=args.api_base, api_key=api_key)
 
     header, sequence = read_fasta(args.input)
     print(f"Scoring sequence: {header} ({len(sequence)} bp)", file=sys.stderr)
 
-    result = score_sequence(sequence, args.model, client)
+    result = score_sequence(sequence, args.api_base, api_key)
 
     output = {
         "header": header,
         "sequence_length": len(sequence),
-        "model": args.model,
-        "scores": result,
+        "api_base": args.api_base,
+        "sampled_probs": result.get("sampled_probs"),
+        "raw_response": result,
     }
 
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)

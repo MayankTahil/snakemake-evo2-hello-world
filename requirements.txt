@@ -1,4 +1,4 @@
 snakemake>=8.0
-openai>=1.0
-pulp>=2.7
+requests>=2.31
 python-dotenv>=1.0
+pulp>=2.7
