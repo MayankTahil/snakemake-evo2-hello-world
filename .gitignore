@@ -7,3 +7,22 @@ __pycache__/
 *.egg-info/
 dist/
 .DS_Store
+
+# Genomic datasets — too large for public git hosting
+data/Reference Genome/
+data/Karn-m/
+
+# Common large genomic file types (belt-and-suspenders)
+*.fa
+*.fa.gz
+*.fna
+*.fna.gz
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.bam
+*.bam.bai
+*.cram
+*.vcf
+*.vcf.gz

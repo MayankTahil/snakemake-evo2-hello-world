@@ -1,0 +1,11 @@
+services:
+  snakemake-evo2:
+    build: .
+    environment:
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+    volumes:
+      - ./data:/workflow/data
+      - ./results:/workflow/results
+      - ./logs:/workflow/logs
+      - ./config:/workflow/config
+    command: ["--cores", "all"]
