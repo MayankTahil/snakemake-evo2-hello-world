@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+from dotenv import load_dotenv
 import sys
 from pathlib import Path
 
@@ -38,6 +39,7 @@ def score_sequence(sequence: str, model: str, client: OpenAI) -> dict:
 
 
 def main():
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Score a DNA sequence with Evo2")
     parser.add_argument("--input", required=True, help="Input FASTA file")
     parser.add_argument("--output", required=True, help="Output JSON file")

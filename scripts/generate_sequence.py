@@ -2,6 +2,7 @@
 
 import argparse
 import os
+from dotenv import load_dotenv
 import sys
 from pathlib import Path
 
@@ -46,6 +47,7 @@ def generate_sequence(prompt: str, length: int, model: str, client: OpenAI) -> s
 
 
 def main():
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Generate a DNA sequence with Evo2")
     parser.add_argument("--input", required=True, help="Input FASTA file (used as prompt)")
     parser.add_argument("--output", required=True, help="Output FASTA file")

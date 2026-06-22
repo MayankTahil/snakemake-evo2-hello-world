@@ -35,8 +35,9 @@ cd snakemake-evo2-hello-world
 conda env create -f environment.yaml
 conda activate snakemake-evo2
 
-# 3. Set API key
-export NVIDIA_API_KEY="nvapi-..."
+# 3. Set your NVIDIA API key
+cp .env.example .env
+# Edit .env and replace nvapi-your-key-here with your real key
 
 # 4. Dry run (hello world example)
 snakemake --cores 2 --config demo=true
@@ -50,6 +51,9 @@ snakemake --cores all
 ```bash
 # Build image
 docker build -t snakemake-evo2 .
+
+# Ensure .env exists with your key (docker-compose reads it automatically)
+cp .env.example .env  # then edit .env
 
 # Hello world demo (no genome data needed)
 docker run --rm \

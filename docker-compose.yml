@@ -1,6 +1,7 @@
 services:
   snakemake-evo2:
     build: .
+    env_file: .env
     environment:
       - NVIDIA_API_KEY=${NVIDIA_API_KEY}
     volumes:
