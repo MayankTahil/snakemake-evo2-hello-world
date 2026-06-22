@@ -1,0 +1,9 @@
+results/
+logs/
+.snakemake/
+__pycache__/
+*.py[cod]
+.env
+*.egg-info/
+dist/
+.DS_Store

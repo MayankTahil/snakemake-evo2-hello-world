@@ -1,0 +1,7 @@
+samples:
+  - example
+
+evo2:
+  model: "arc-institute/evo-2-40b"
+  api_base: "https://integrate.api.nvidia.com/v1"
+  generation_length: 100

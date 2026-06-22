@@ -1,0 +1,11 @@
+name: snakemake-evo2
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.11
+  - snakemake>=8.0
+  - pip
+  - pip:
+      - openai>=1.0
